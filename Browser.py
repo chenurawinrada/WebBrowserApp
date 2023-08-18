@@ -34,12 +34,13 @@ color13 = json_data['color13']
 color14 = json_data['color14']
 sp1 = json_data['sp1']
 sp2 = json_data['sp2']
+opc = json_data['opc']
 
 class SettingsWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.WIDTH = 400
-        self.HEIGHT = 250
+        self.HEIGHT = 350
         self.resize(self.WIDTH, self.HEIGHT)
         self.centralwidget = QWidget(self)
         self.centralwidget.resize(self.WIDTH, self.HEIGHT)
@@ -84,6 +85,23 @@ class SettingsWindow(QWidget):
         self.black_theme_button.clicked.connect(self.settings_changed_black)
         self.black_theme_button.setGeometry(100, 150, 200, 40)
 
+        self.opacityy = QLineEdit(self)
+        self.opacityy.setStyleSheet(f"""
+            color: {color2};
+            font-weight: bold;
+            font-family: Georgia;
+            font-size: 15px;
+            background: transparent;
+            border: 5px solid {color2};
+            border-radius: 20px;
+        """)
+        self.opacityy.setText(str(opc))
+        self.opacityy.setGeometry(100, 200, 200, 40)
+
+        self.opc_button = QPushButton('Set Opacity', self)
+        self.opc_button.clicked.connect(self.settings_changed_opc)
+        self.opc_button.setGeometry(100, 250, 200, 40)
+
         # Initial
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -102,6 +120,24 @@ class SettingsWindow(QWidget):
 
     def close_ap(self):
         self.close()
+
+    def settings_changed_opc(self):
+        with open("settings/white.json", "r") as j:
+            data__ = json.load(j)
+        opaci = self.opacityy.text()
+        data__["opc"] = float(opaci)
+        nd = json.dumps(data__)
+        with open("settings/white.json", 'w') as json_:
+            json_.write(nd)
+            json_.close()
+        with open("settings/black.json", "r") as j:
+            data__ = json.load(j)
+        opaci = self.opacityy.text()
+        data__["opc"] = float(opaci)
+        nd = json.dumps(data__)
+        with open("settings/black.json", 'w') as json_:
+            json_.write(nd)
+            json_.close()
 
     def settings_changed_white(self):
         with open("settings/json_file_chooser.txt", "w") as file:
@@ -225,8 +261,7 @@ class MainWindow(QMainWindow):
         # Initial
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowOpacity(0.6)
-        # self.setWindowOpacity(1)
+        self.setWindowOpacity(opc)
 
         self.centralwidget.setStyleSheet(
             f"""
